@@ -14,7 +14,7 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static("doctors"))
 app.use(fileUpload())
-const port =5000
+const port = process.env.PORT || 5000
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
 client.connect(err => {
   const appointmentCollection = client.db("doctorsPortalProject").collection("doctorsAppointment");
   const doctorsCollection = client.db("doctorsPortalProject").collection("doctors");
-// post appointment 
+  // post appointment 
 
   app.post("/addAppointment", (req, res) => {
     const appointment = req.body
@@ -35,40 +35,40 @@ client.connect(err => {
         res.send(result)
       })
   })
-// get appointment
-app.get("/appointments",(req, res)=>{
-  const email = req.query.email;
-  appointmentCollection.find({email : email})
-  .toArray((err , documents)=>{
-    res.send(documents)
-  })
+  // get appointment
+  app.get("/appointments", (req, res) => {
+    const email = req.query.email;
+    appointmentCollection.find({ email: email })
+      .toArray((err, documents) => {
+        res.send(documents)
+      })
 
-}) 
+  })
 
 
   // get appointment data specific by date 
   app.post("/appointmentByDate", (req, res) => {
     const selectedDate = req.body.selectedDate
     const email = req.body.email
-    doctorsCollection.find({email : email})
-    .toArray((err , doctorsInfo)=>{
-      const filter = {date:selectedDate}
-      if(doctorsInfo.length === 0){
-        filter.email = email
-      }
-      appointmentCollection.find(filter)
-      .toArray((err , documents)=>{
-        res.send(documents)
+    doctorsCollection.find({ email: email })
+      .toArray((err, doctorsInfo) => {
+        const filter = { date: selectedDate }
+        if (doctorsInfo.length === 0) {
+          filter.email = email
+        }
+        appointmentCollection.find(filter)
+          .toArray((err, documents) => {
+            res.send(documents)
+          })
       })
-    })
 
-   
+
   })
 
 
   // add a doctor 
-  app.post("/addDoctor", (req, res)=>{
-    const file = req.files.file 
+  app.post("/addDoctor", (req, res) => {
+    const file = req.files.file
     const name = req.body.name
     const email = req.body.email
     const qualification = req.body.Qualification
@@ -77,7 +77,7 @@ app.get("/appointments",(req, res)=>{
     const serviceName = req.body.serviceName
 
 
-        //  for save image in locally by express 
+    //  for save image in locally by express 
 
     // const filePath = `${__dirname}/doctors/${file.name}`
     // file.mv(filePath, err=>{
@@ -87,7 +87,7 @@ app.get("/appointments",(req, res)=>{
     //   else{
     //     res.send({name : file.name , path : `/${file.name}`})
     //   }
-    
+
     // })
 
     // const newImg = fs.readFileSync(filePath);
@@ -96,10 +96,10 @@ app.get("/appointments",(req, res)=>{
     const encImg = newImg.toString("base64");
     const image = {
       contentType: file.mimetype,
-      size : file.size,
-      img : Buffer.from(encImg ,"base64")
+      size: file.size,
+      img: Buffer.from(encImg, "base64")
     }
-    doctorsCollection.insertOne({name , email ,phone, qualification , appointmentTime , serviceName , image})
+    doctorsCollection.insertOne({ name, email, phone, qualification, appointmentTime, serviceName, image })
       .then(result => {
         res.send(result.insertedId)
         // fs.remove(filePath , error=>{
@@ -114,23 +114,23 @@ app.get("/appointments",(req, res)=>{
   })
 
 
-// get a doctor info 
+  // get a doctor info 
 
-app.get("/doctors",(req, res)=>{
-  doctorsCollection.find({})
-  .toArray((err , documents)=>{
-    res.send(documents)
+  app.get("/doctors", (req, res) => {
+    doctorsCollection.find({})
+      .toArray((err, documents) => {
+        res.send(documents)
+      })
   })
-})
- 
-// get data data from email 
-app.post("/isDoctor",(req, res)=>{
-  const email = req.body.email
-  doctorsCollection.find({email: email})
-  .toArray((err , doc)=>{
-    res.send(doc)
+
+  // get data data from email 
+  app.post("/isDoctor", (req, res) => {
+    const email = req.body.email
+    doctorsCollection.find({ email: email })
+      .toArray((err, doc) => {
+        res.send(doc)
+      })
   })
-})
 
 });
 
