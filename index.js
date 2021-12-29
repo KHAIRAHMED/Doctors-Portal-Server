@@ -92,7 +92,6 @@ client.connect(err => {
 
     // const newImg = fs.readFileSync(filePath);
     const newImg = file.data;
-    console.log(newImg)
     const encImg = newImg.toString("base64");
     const image = {
       contentType: file.mimetype,
@@ -124,8 +123,8 @@ client.connect(err => {
   })
 
   // get data data from email 
-  app.post("/isDoctor", (req, res) => {
-    const email = req.body.email
+  app.get("/isDoctor", (req, res) => {
+    const email = req.query.email
     doctorsCollection.find({ email: email })
       .toArray((err, doc) => {
         res.send(doc)
